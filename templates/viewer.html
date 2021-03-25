@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html >
+    <head>
+        <title>Duck Stats - {{info}}</title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='hotnessImage.png') }}">
+    </head>
+
+    <body>
+        <div class="SideBarBox">
+        <div class="DuckBox SideBar">
+            <div style="height: 7%;">
+                <form name="nav" action="" method="GET" onsubmit="">
+                    <input type="text"name="search" placeholder="ziggy" {% if request['search'] %} value="{{request['search']}}{%endif%}" >
+                    <input style="margin:16px; padding: 1px;" class="DuckBox DuckButton" type="submit" value ="Search Duck" >
+                </form>
+            </div>
+            <hr>
+            <br>
+            <span style="font-size:135%; margin: 16px;"><b>Sort By:</b></span><br>
+            <form id=feildBrowser  style="height: 55%; overflow-x: hidden; overflow-y: auto; margin-top: 16px; margin-bottom: 16px; border-style: inset;">
+                
+                <div style="fieldBrowser;">
+                    <label><input type='radio' name="sort" id= 'Updated' value="updated" {% if request['sort'] == 'updated' %}checked{% endif %}>Last Updated</input><br></label>
+                    {% for field in template %}<label>
+                        <input type='radio' name="sort" id= {{field}} value="{{field}}" {% if request['sort'] == field %}checked{% endif %}>{{field}}</input><br></label>
+                    {% endfor %}
+                </div>
+            </form>
+            
+            <input type="submit" class ='DuckBox DuckButton'  form="feildBrowser" style="margin: 8px; height: 5%; width: 75%; text-align: center;" value="Sort All"/></input>
+            <label><input  form="feildBrowser"  style="" type='checkbox' name='desc' {% if request['desc'] %}checked{% endif %}>⇵</input></label>
+
+            <hr>
+            <div style="text-align: center;">
+                <p>Page:</p>
+                {% if pag.has_prev %}
+                    <a href="{{ url_for('ClientView', page=1,sort = request['sort'], search = request['search'], desc = request['desc'])}}">⟬</a>
+                    <a href="{{ url_for('ClientView', page=pag.prev_num,sort = request['sort'], search = request['search'], desc = request['desc'])}}">◀</a>
+                {% endif %}
+                {{pag.page}}
+                {% if pag.has_next %}
+                    <a  href="{{ url_for('ClientView', page=pag.next_num,sort = request['sort'], search = request['search'], desc = request['desc'])}}">▶</a>
+                    <a href="{{ url_for('ClientView', page=pag.pages,sort = request['sort'], search = request['search'], desc = request['desc'])}}">⟭</a>
+                {% endif %}
+            </div>
+            <hr>
+            <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=2284109266" target="_blank">Get The Mod</a> | 
+            <a href="https://quackdex.herokuapp.com/hats" target="_blank">QuackDex</a> |
+            <a href="http://quackmouth.gq/" target="_blank">Quack Mouth</a>
+        </div></div>
+
+        <div class="DuckListBox">
+        <div class ="DuckList">
+            {% for r in range(1)%}
+            {% if not Ducks %}
+            No Ducks...
+            {%endif%}
+            {% for duck in Ducks %}
+                {% set stats = duck.vals.stats %}
+                {% if stats %}
+                    <button type="button" class="Duck DuckBox" >
+                        <img src="{{ duck.steam['avatarmedium'] }}" style="border-style: solid; outline: 4px solid black; float: left; width: 48px;" >  
+                        <div style="float:left; margin-left: 8px; ">
+                            <span style="font-size: 170%;">{{duck.vals.real_name}}</span><br>
+                            <a class="DuckLink" href="{{ duck.steam['profileurl'] }}" target="_blank">Steam : {{duck.vals.steam_name}}</a>
+                        </div>
+                        <div style="float:right; margin-right: 8px; ">
+                            <br>
+                            <span>{{duck.vals.updated}}</span><br>
+                            {% if request['sort'] != 'updated' %}<span>{{request['sort']}} : {{duck.vals.stats[request['sort']]}}</span> {%endif%}
+                        </div>
+                    </button>
+                    <div class='stats'>                
+                        {% for stat in stats.keys() %}                       
+                            <li class=' stat'><span>{{stat}} </span></span>  <span style="left: calc(30% + 120px); position: sticky;"> {{stats[stat]}}</span></li>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+            {%endfor %}
+        </div></div>
+    </body>
+</html>
+
+<style>
+    
+    html, body {position: absolute; height: 100vh; width: 100vw; margin: 0; padding:0; background-color: lightcoral; }
+
+    * { 
+    -moz-box-sizing: border-box; 
+    -webkit-box-sizing: border-box; 
+     box-sizing: border-box; 
+    }
+
+
+  button, input:hover {
+        text-decoration:underline;
+    }
+
+    .DuckButton {
+        background-color: #f03131;
+        border-left-color: #f05c5c;
+        border-top-color: #f05c5c;
+        border-right-color: #840000;
+        border-bottom-color: #840000;
+        
+        cursor: pointer;
+    }
+
+    .fieldBrowser {
+        margin-top: 16px;
+        overflow-y:auto;
+        overflow-x: hidden;
+
+    }
+
+
+    .SideBarBox{
+        width: 25%;
+        height: 100%;
+        float: left;
+        overflow-y:auto;
+        overflow-x: hidden;
+    }
+    .SideBar {
+        background-color: #f09831;
+        border-left-color: #efd3b2;
+        border-top-color: #efd3b2;
+        border-right-color: #844700;
+        border-bottom-color: #844700;
+        margin: 8px;
+        margin-left: 12px;
+        height: calc(100% - 16px);
+        overflow-y:auto;
+        overflow-x: hidden;
+    }
+
+    .DuckLink {
+        color: inherit;
+        text-decoration: none;
+        margin-left: 8px;
+    }
+    .DuckLink:hover {
+        text-decoration:underline;
+    }
+
+    .DuckListBox {
+        float: right ;
+        width: 75%;
+        height: 100%;
+        overflow-y:auto;
+        overflow-x: hidden;
+        
+    }
+    .DuckList {
+       margin: 8px;
+       margin-right: 16px;
+    }
+
+    .DuckBox {
+        border-width: 5px;
+        border-style: solid;
+        outline: 4px solid black;
+        color: white;
+        font-size: 15px;
+        text-align: left;
+        padding: 5px;
+        font-family: 'DuckGame'
+    }
+
+    .Duck {
+        background-color: #31a2f2;
+        border-left-color: #b2dcef;
+        border-top-color: #b2dcef;
+        border-right-color: #005784;
+        border-bottom-color: #005784;
+       
+        cursor: pointer;
+        width: 100%;
+
+        margin: 2px;
+    }
+    .stats {
+        position: relative;
+        margin-left: 4px;
+        background-position-x: 50%;
+        display: none;
+        overflow: hidden;
+        margin-top: 2px;
+        margin-bottom: 2px;
+        outline: 4px solid black;
+    }
+
+    .stat {
+        color:white;
+        background-color: #f03131;
+        padding-left: 20px; 
+        list-style-type:square
+    }
+    li:nth-child(odd) { background: #840000;}
+
+
+    @font-face {
+    font-family:'DuckGame';
+    src: {{ url_for('static', filename='DuckGameFontByBsnollie-Regular.otf') }}  
+    }
+
+</style>
+<script>
+    var coll = document.getElementsByClassName("Duck");
+    var i;
+    var len = coll.length
+
+    if(len == 1){
+        coll[0].nextElementSibling.style.display = "block";
+    }
+    for (i = 0; i < len; i++) {
+        var duck = coll[i];
+        duck.addEventListener("click", function() {
+            this.classList.toggle("active");
+            var content = this.nextElementSibling;
+            if (content.style.display === "block") {
+                content.style.display = "none";
+            } else {
+                content.style.display = "block";
+            }
+        });
+    }
+    
+</script>
